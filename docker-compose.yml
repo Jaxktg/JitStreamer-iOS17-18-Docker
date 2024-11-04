@@ -1,0 +1,28 @@
+services:
+  usbmuxd:
+      privileged: true
+      volumes:
+        - usbmuxd-socket:/var/run
+      restart: always
+      container_name: usbmuxd
+      build: ./usbmuxd-docker
+
+
+  jitstreamer:
+    container_name: JitStreamer
+    build:
+      context: .
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - $HOME/.pymobiledevice3:/root/.pymobiledevice3:z
+      - usbmuxd-socket:/var/run
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    security_opt:
+      - "label:disable"
+
+volumes:
+ usbmuxd-socket:
